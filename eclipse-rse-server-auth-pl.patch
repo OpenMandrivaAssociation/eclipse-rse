@@ -1,0 +1,68 @@
+diff -up ./serverruntime/scripts/linux/auth.pl.fix ./serverruntime/scripts/linux/auth.pl
+--- ./serverruntime/scripts/linux/auth.pl.fix	2011-12-01 15:38:49.000000000 -0500
++++ ./serverruntime/scripts/linux/auth.pl	2011-12-01 15:39:30.000000000 -0500
+@@ -11,9 +11,12 @@
+ # David McKnight   (IBM)   - [254785] [dstore] RSE Server assumes home directory on target machine
+ # David McKnight   (IBM)   - [262013] [dstore][unix] RSE Daemon fails to start server on HP-UX
+ # David McKnight   (IBM)   - [270833] Unify rseserver auth.pl to not use "su -p" on any Platform
++# Jeff Johnston    (Red Hat) - [364859] Support Kerberos
+ #*******************************************************************************
+ 
+ use Shell;
++use Authen::PAM;
++use POSIX qw(ttyname);
+ 
+ if (!defined($ARGV[0]) || !defined($ARGV[1]) || !defined($ARGV[2]) || !defined($ARGV[3]) || !defined($ARGV[4]))
+ {
+@@ -42,7 +45,23 @@ else
+   chomp($pwdIN);
+ 
+ 
+-   @passwdStruct = getpwnam($userIN);
++  @passwdStruct = getpwnam($userIN);
++
++  sub my_conv_func {
++    my @res;
++    while ( @_ ) {
++        my $code = shift;
++        my $msg = shift;
++        my $ans = "";
++
++        $ans = $userIN if ($code == PAM_PROMPT_ECHO_ON() );
++        $ans = $pwdIN if ($code == PAM_PROMPT_ECHO_OFF() );
++
++        push @res, (PAM_SUCCESS(),$ans);
++    }
++    push @res, PAM_SUCCESS();
++    return @res;
++  }
+ 
+   if (@passwdStruct == 0)
+   {
+@@ -51,15 +70,21 @@ else
+   }
+   else
+   {
+-    $passwd=$passwdStruct[1];
+     $dir=$passwdStruct[7]; # get the user's home dir
+-    #$passwd = $pass;
+-    
+-    $encryptedPWD = crypt($pwdIN, $passwd);
++    # now authenticate the password using Authen::PAM instead
++    # of using passwd in passwdStruct because it does not support
++    # kerberos
++    $service="login";
++    $tty_name = ttyname(fileno(STDIN));
++    ref($pamh = new Authen::PAM($service, $userIN, \&my_conv_func)) ||
++         die "Error code $pamh during PAM init!";
++
++    $res = $pamh->pam_set_item(PAM_TTY(), $tty_name);
++    $res = $pamh->pam_authenticate;
+     $classpath=$ENV{CLASSPATH};
+     $suOptions="-";
+ 
+-    if ($passwd eq $encryptedPWD)
++    if ($res == PAM_SUCCESS())
+     {
+ 		print("success\n");
+ 

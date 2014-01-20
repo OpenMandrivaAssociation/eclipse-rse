@@ -1,0 +1,120 @@
+--- pom.xml.orig	2013-05-31 20:34:41.000000000 +0300
++++ pom.xml	2013-06-07 16:07:38.815902331 +0300
+@@ -14,11 +14,11 @@
+   <prerequisites>
+     <maven>3.0</maven>
+   </prerequisites>
+-  <parent>
++  <!-- <parent>
+     <groupId>org.eclipse</groupId>
+     <artifactId>eclipse-parent</artifactId>
+     <version>3</version>
+-  </parent>
++  </parent> -->
+   <groupId>org.eclipse.tm</groupId>
+   <artifactId>tm-parent</artifactId>
+   <version>3.8.0-SNAPSHOT</version>
+@@ -228,17 +228,24 @@
+     <!--   <module>rse/plugins/org.eclipse.rse.useractions.sdk</module> -->
+     <module>releng/org.eclipse.tm.repo</module>
+     <module>terminal/plugins/org.eclipse.tm.terminal</module>
++    <!--
+     <module>terminal/plugins/org.eclipse.tm.terminal.serial</module>
+     <module>terminal/plugins/org.eclipse.tm.terminal.ssh</module>
+     <module>terminal/plugins/org.eclipse.tm.terminal.telnet</module>
++    -->
+     <module>terminal/plugins/org.eclipse.tm.terminal.view</module>
++    <!--
+     <module>terminal/plugins/org.eclipse.tm.terminal.local</module>
+-    <module>terminal/plugins/org.eclipse.tm.terminal.test</module>
++    -->
++    <!-- <module>terminal/plugins/org.eclipse.tm.terminal.test</module> -->
+     <module>terminal/features/org.eclipse.tm.terminal-feature</module>
++    <!--
+     <module>terminal/features/org.eclipse.tm.terminal.serial-feature</module>
+     <module>terminal/features/org.eclipse.tm.terminal.ssh-feature</module>
+     <module>terminal/features/org.eclipse.tm.terminal.telnet-feature</module>
++    -->
+     <module>terminal/features/org.eclipse.tm.terminal.view-feature</module>
++    <!--
+     <module>terminal/features/org.eclipse.tm.terminal.core.sdk-feature</module>
+     <module>terminal/features/org.eclipse.tm.terminal.sdk-feature</module>
+     <module>terminal/features/org.eclipse.tm.terminal.local-feature</module>
+@@ -251,6 +258,7 @@
+     <module>wince/org.eclipse.rse.wince-feature</module>
+     <module>wince/org.eclipse.rse.subsystems.wince</module>
+     <module>wince/org.eclipse.tm.rapi</module>
++    -->
+   </modules>
+   <build>
+     <plugins>
+@@ -286,42 +294,7 @@
+               <environment>
+                 <os>linux</os>
+                 <ws>gtk</ws>
+-                <arch>x86</arch>
+-              </environment>
+-              <environment>
+-                <os>linux</os>
+-                <ws>gtk</ws>
+-                <arch>x86_64</arch>
+-              </environment>
+-              <environment>
+-                <os>linux</os>
+-                <ws>gtk</ws>
+-                <arch>ppc64</arch>
+-              </environment>
+-              <environment>
+-                <os>win32</os>
+-                <ws>win32</ws>
+-                <arch>x86</arch>
+-              </environment>
+-              <environment>
+-                <os>win32</os>
+-                <ws>win32</ws>
+-                <arch>x86_64</arch>
+-              </environment>
+-              <environment>
+-                <os>macosx</os>
+-                <ws>cocoa</ws>
+-                <arch>x86</arch>
+-              </environment>
+-              <environment>
+-                <os>macosx</os>
+-                <ws>cocoa</ws>
+-                <arch>x86_64</arch>
+-              </environment>
+-              <environment>
+-                <os>aix</os>
+-                <ws>gtk</ws>
+-                <arch>ppc</arch>
++                <arch>noarch</arch>
+               </environment>
+             </environments>
+             <resolver>p2</resolver>
+@@ -376,25 +349,8 @@
+           <groupId>org.eclipse.tycho</groupId>
+           <artifactId>tycho-packaging-plugin</artifactId>
+           <version>${tycho-version}</version>
+-          <dependencies>
+-            <dependency>
+-              <groupId>org.eclipse.tycho.extras</groupId>
+-              <artifactId>tycho-buildtimestamp-jgit</artifactId>
+-              <version>${tycho-version}</version>
+-            </dependency>
+-            <dependency>
+-              <groupId>org.eclipse.tycho.extras</groupId>
+-              <artifactId>tycho-sourceref-jgit</artifactId>
+-              <version>${tycho-extras-version}</version>
+-            </dependency>
+-          </dependencies>
+           <configuration>
+             <strictBinIncludes>false</strictBinIncludes>
+-            <timestampProvider>jgit</timestampProvider>
+-            <jgit.ignore>pom.xml</jgit.ignore>
+-            <sourceReferences>
+-              <generate>true</generate>
+-            </sourceReferences>
+           </configuration>
+         </plugin>
+         <plugin>

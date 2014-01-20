@@ -1,0 +1,12 @@
+diff -up ./rse/tests/org.eclipse.rse.tests-feature/feature.xml.fix3 ./rse/tests/org.eclipse.rse.tests-feature/feature.xml
+--- ./rse/tests/org.eclipse.rse.tests-feature/feature.xml.fix3	2013-04-04 15:09:58.000000000 -0400
++++ ./rse/tests/org.eclipse.rse.tests-feature/feature.xml	2013-04-04 15:10:20.000000000 -0400
+@@ -47,7 +47,7 @@
+       <import plugin="org.eclipse.rse.subsystems.files.ftp" version="2.1.0" match="compatible"/>
+       <import plugin="org.eclipse.jface.text"/>
+       <import plugin="org.eclipse.help"/>
+-      <import plugin="org.junit" version="3.8.1" match="compatible"/>
++      <import plugin="org.junit"/>
+       <import plugin="org.apache.ant"/>
+    </requires>
+ 

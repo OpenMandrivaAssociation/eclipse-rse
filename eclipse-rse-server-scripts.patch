@@ -1,0 +1,77 @@
+diff -up ./serverruntime/data/ssl.properties.fix ./serverruntime/data/ssl.properties
+--- ./serverruntime/data/ssl.properties.fix	2011-12-14 17:55:18.000000000 -0500
++++ ./serverruntime/data/ssl.properties	2011-12-14 17:59:39.000000000 -0500
+@@ -38,7 +38,12 @@ disable_server_ssl=false
+ ###################################
+ # The keystore file and password need to be specified for the
+ # server to use.  If none is specified, the server falls back
+-# to use the same keystore and password as the daemon
++# to use the same keystore and password as the daemon.  Note
++# that the server uses the home directory of the userid as its
++# working directory so a relative path will only work for both
++# daemon and server if the keystore file is copied.  A full path
++# is required to share a single keystore file between server and
++# daemon.
+ #
+ #server_keystore_file=
+-#server_keystore_password=
+\ No newline at end of file
++#server_keystore_password=
+diff -up ./serverruntime/scripts/linux/daemon.pl.fix ./serverruntime/scripts/linux/daemon.pl
+--- ./serverruntime/scripts/linux/daemon.pl.fix	2011-12-05 18:58:17.000000000 -0500
++++ ./serverruntime/scripts/linux/daemon.pl	2011-12-13 19:02:13.000000000 -0500
+@@ -43,16 +43,17 @@ else
+ 		$trace = $ENV{DSTORE_TRACING_ON};
+ 	}
+ 	
+-	    $dir= $ENV{PWD};
+-	    $plugins_dir=$dir;
++	    $dir= "$ENV{PWD}";
++	    $configdir= "/etc/sysconfig/rseserver/";
++	    $plugins_dir="/usr/share/java/eclipse-rse-server";
+ 		
+-	    $ENV{A_PLUGIN_PATH}="$plugins_dir/";
++	    $ENV{A_PLUGIN_PATH}="$dir/";
+     
+     
+ 	    $oldClasspath = $ENV{CLASSPATH};
+ 	    
+ 
+-		$ENV{CLASSPATH}="$plugins_dir:$plugins_dir/dstore_extra_server.jar:$plugins_dir/dstore_core.jar:$plugins_dir/dstore_miners.jar:$plugins_dir/clientserver.jar";
++		$ENV{CLASSPATH}="$dir:$configdir:$plugins_dir/dstore_extra_server.jar:$plugins_dir/dstore_core.jar:$plugins_dir/dstore_miners.jar:$plugins_dir/clientserver.jar";
+ 		if (defined ($oldClasspath))
+ 		{
+ 		  $ENV{CLASSPATH}="$ENV{CLASSPATH}:$oldClasspath";
+diff -up ./serverruntime/scripts/linux/server.pl.fix ./serverruntime/scripts/linux/server.pl
+--- ./serverruntime/scripts/linux/server.pl.fix	2011-12-05 18:58:21.000000000 -0500
++++ ./serverruntime/scripts/linux/server.pl	2011-12-06 18:16:23.000000000 -0500
+@@ -15,18 +15,17 @@ $port = $ARGV[0];
+ $timeout = $ARGV[1];
+ $clientUserID = $ARGV[2];
+ 
+-$dir= $ENV{PWD};
+-#print("path $dir");
++$dir="$ENV{PWD}";
++$configdir="/etc/sysconfig/rseserver";
+ 
+-#$plugins_dir=substr($dir,0,rindex($dir,"/"));
+-$plugins_dir=$dir;
++$plugins_dir="/usr/share/java/eclipse-rse-server";
+ 
+ $ENV{A_PLUGIN_PATH}="$plugins_dir/";
+ 
+ $oldClasspath = $ENV{CLASSPATH};
+ 
+ 
+-$ENV{"CLASSPATH"}="$plugins_dir:$plugins_dir/dstore_extra_server.jar:$plugins_dir/dstore_core.jar:$plugins_dir/dstore_miners.jar:$plugins_dir/clientserver.jar:$oldClasspath";
++$ENV{"CLASSPATH"}="$dir:$configdir:$plugins_dir:$plugins_dir/dstore_extra_server.jar:$plugins_dir/dstore_core.jar:$plugins_dir/dstore_miners.jar:$plugins_dir/clientserver.jar:$oldClasspath";
+ 
+ if (!defined($timeout))
+ {
+@@ -44,4 +43,4 @@ else
+ 	}
+ }
+ 
+-$ENV{CLASSPATH}=$oldClasspath;
+\ No newline at end of file
++$ENV{CLASSPATH}=$oldClasspath;

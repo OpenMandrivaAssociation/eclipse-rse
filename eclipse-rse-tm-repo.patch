@@ -1,0 +1,22 @@
+--- releng/org.eclipse.tm.repo/category.xml.orig	2013-05-31 20:34:41.000000000 +0300
++++ releng/org.eclipse.tm.repo/category.xml	2013-06-07 15:47:26.975109903 +0300
+@@ -15,9 +15,10 @@
+    <feature url="features/org.eclipse.rse.scp_0.2.100.qualifier.jar" id="org.eclipse.rse.scp" version="0.2.100.qualifier">
+       <category name="tm_35_optional"/>
+    </feature>
+-   <feature url="features/org.eclipse.rse.tests_3.4.100.qualifier.jar" id="org.eclipse.rse.tests" version="3.4.100.qualifier">
++   <feature url="features/org.eclipse.tm.terminal.view_2.4.100.qualifier.jar" id="org.eclipse.tm.terminal.view" version="2.4.100.qualifier">
+       <category name="tm_35_optional"/>
+    </feature>
++   <!--
+    <feature url="features/org.eclipse.tm.terminal.local.sdk_0.3.100.qualifier.jar" id="org.eclipse.tm.terminal.local.sdk" version="0.3.100.qualifier">
+       <category name="tm_35_optional"/>
+    </feature>
+@@ -25,6 +26,7 @@
+       <category name="tm_35_main"/>
+    </feature>
+    <feature url="features/org.eclipse.tm.terminal.core.sdk_3.3.100.qualifier.jar" id="org.eclipse.tm.terminal.core.sdk" version="3.3.100.qualifier"/>
++   -->
+    <category-def name="tm_35_main" label="TM and RSE 3.5 Main Features">
+       <description>
+          TM and RSE Main Features
