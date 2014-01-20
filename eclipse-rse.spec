@@ -84,10 +84,10 @@ The Remote System Explorer (RSE) framework server that can be used so clients ca
 %prep
 %setup -q -n org.eclipse.tm-R3_5GA
 
-%patch3 -b .orig
+%patch3
 %patch4
 %patch5
-%patch6 -b .orig
+%patch6
 
 sed -i -e 's/<arch>x86<\/arch>/<arch>%{eclipse_arch}<\/arch>/g' pom.xml
 
