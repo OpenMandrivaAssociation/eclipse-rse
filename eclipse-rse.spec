@@ -1,71 +1,38 @@
 %{?_javapackages_macros:%_javapackages_macros}
-%if 0%{?rhel} >= 6
-%global debug_package %{nil}
-%endif
-%global install_loc         %{_datadir}/eclipse/dropins
 %global rseserver_install   %{_datadir}/eclipse-rse-server
 %global rseserver_java      %{_datadir}/java/eclipse-rse-server
 %global rseserver_config    %{_sysconfdir}/sysconfig/rseserver
-%global rse_snapshot        org.eclipse.tm
+%global rse_snapshot        R3_6
 
 Name: eclipse-rse
 Summary: Eclipse Remote System Explorer
-Version: 3.5
-Release: 3.0%{?dist}
+Version: 3.6.0
+Release: 4.1
 License: EPL
+Group:	Development/Java
 URL: http://www.eclipse.org/dsdp/tm/
 
-Source0: http://git.eclipse.org/c/tm/org.eclipse.tm.git/snapshot/org.eclipse.tm-R3_5GA.tar.bz2
-Source4: notice.html
-Source5: epl-v10.html
+Source0: http://git.eclipse.org/c/tm/org.eclipse.tm.git/snapshot/R3_6.tar.bz2
 
 # Use Authen::pam to authenticate clients
 Patch1: eclipse-rse-server-auth-pl.patch
 # Fix classpath in daemon and server scripts to point
 # to install locations
 Patch2: eclipse-rse-server-scripts.patch
-# Patch to remove eclipse-parent pom reference and multiple environments
+# Patch to remove dependency on jgit for tycho-packaging-plugin
 Patch3: eclipse-rse-top-pom.patch
 # Patch to remove dependency on org.apache.commons.net.source
 Patch4: eclipse-rse-commons-net-source.patch
-# Patch to allow junit4 to be used for building tests
-Patch5: eclipse-rse-junit.patch
-# Patch to remove tests from tm repo
-Patch6: eclipse-rse-tm-repo.patch
 
-
-BuildRequires:    java-devel >= 1.5.0
-
-# All arches line up except i386 -> x86
-%ifarch %{ix86}
-%define eclipse_arch    x86
-%else
-%ifarch %{arm}
-%define eclipse_arch    arm
-%else
-%define eclipse_arch   %{_arch}
-%endif
-%endif
-
-%if 0%{?rhel} >= 6
-ExclusiveArch: i686 x86_64
-%else
 BuildArch: noarch
-%endif
 
 BuildRequires: tycho
 BuildRequires: tycho-extras
-BuildRequires: maven >= 3.0.3
-BuildRequires: junit
-
+BuildRequires: eclipse-license
 BuildRequires: eclipse-pde >= 1:3.8.0-0.21
-BuildRequires: eclipse-emf >= 0:2.4.1
-BuildRequires: apache-commons-net >= 0:1.4.1-5.4
+BuildRequires: apache-commons-net
 Requires: eclipse-platform >= 1:3.8.0-0.21
-Requires: eclipse-emf >= 0:2.4.1
-Requires: apache-commons-net >= 0:2.0
-
-
+Requires: apache-commons-net
 
 %description
 Remote System Explorer (RSE) is a framework and toolkit in Eclipse Workbench
@@ -73,23 +40,18 @@ that allows you to connect and work with a variety of remote systems.
 
 %package server
 Summary: Eclipse Remote System Explorer Server
-
 Requires: perl
 Requires: perl-Authen-PAM
-Requires: java
+Requires: java-headless
 
 %description server
 The Remote System Explorer (RSE) framework server that can be used so clients can connect to this machine via RSE.
 
 %prep
-%setup -q -n org.eclipse.tm-R3_5GA
+%setup -q -n %{rse_snapshot}
 
-%patch3
+%patch3 -b .orig
 %patch4
-%patch5
-%patch6
-
-sed -i -e 's/<arch>x86<\/arch>/<arch>%{eclipse_arch}<\/arch>/g' pom.xml
 
 pushd rse/plugins/org.eclipse.rse.services.dstore
 %patch1
@@ -97,33 +59,23 @@ pushd rse/plugins/org.eclipse.rse.services.dstore
 popd
 sed -i -e 's|3.2,3.3|3.2,3.9|g' pom.xml
 
-%build
-export MAVEN_OPTS="-XX:CompileCommand=exclude,org/eclipse/tycho/core/osgitools/EquinoxResolver,newState ${MAVEN_OPTS}"
-mvn-rpmbuild -DskipTychoVersionCheck -Dmaven.test.skip=true clean install
+# Not necessary build the p2 repo with mvn_install
+%pom_disable_module releng/org.eclipse.tm.repo
 
-cp %{SOURCE4} .
-cp %{SOURCE5} .
+# Fix pom versions
+sed -i -e 's@\.qualifier</version>@-SNAPSHOT</version>@' $(find -name pom.xml)
+
+%build
+%mvn_build -j
 
 %install
+%mvn_install
 
-install -d -m 755 %{buildroot}%{_datadir}/eclipse
-install -d -m 755 %{buildroot}%{install_loc}/rse/eclipse
 install -d -m 755 %{buildroot}%{rseserver_install}
 install -d -m 755 %{buildroot}%{rseserver_java}
 install -d -m 755 %{buildroot}%{rseserver_config}
 
-cp -R releng/org.eclipse.tm.repo/target/repository/features \
-   %{buildroot}%{install_loc}/rse/eclipse \
-
-cp -R releng/org.eclipse.tm.repo/target/repository/plugins \
-   %{buildroot}%{install_loc}/rse/eclipse \
-
-pushd %{buildroot}%{install_loc}/rse/eclipse/plugins
-rm org.apache.commons.net_*.jar
-ln -s %{_javadir}/commons-net.jar org.apache.commons.net.jar
-popd
-
-pushd %{buildroot}%{install_loc}/rse/eclipse/plugins
+pushd %{buildroot}%{_datadir}/eclipse/dropins/rse/eclipse/plugins
 unzip -q -o -d %{buildroot}%{rseserver_java} org.eclipse.rse.services.dstore_*.jar dstore_miners.jar
 unzip -q -o -d %{buildroot}%{rseserver_java} org.eclipse.dstore.core_*.jar dstore_core.jar
 unzip -q -o -d %{buildroot}%{rseserver_java} org.eclipse.dstore.extra_*.jar dstore_extra_server.jar
@@ -148,10 +100,8 @@ cp *.properties %{buildroot}%{rseserver_config}
 cp *.dat %{buildroot}%{rseserver_install}
 popd
 
-%files
-%{install_loc}/rse
-%doc rse/features/org.eclipse.rse.sdk-feature/epl-v10.html
-%doc rse/features/org.eclipse.rse.sdk-feature/license.html
+%files -f .mfiles
+%doc releng/rootfiles/*.html
 
 %files server
 %{rseserver_install}
@@ -159,10 +109,42 @@ popd
 %dir %{rseserver_config}
 %config(noreplace) %{rseserver_config}/ssl.properties
 %config(noreplace) %{rseserver_config}/rsecomm.properties
-%doc notice.html
-%doc epl-v10.html
+%doc releng/rootfiles/*.html
 
 %changelog
+* Thu Dec 11 2014 Mat Booth <mat.booth@redhat.com> - 3.6.0-4
+- Fix artifact versions in pom files
+
+* Thu Nov 06 2014 Mat Booth <mat.booth@redhat.com> - 3.6.0-3
+- Rebuild to regenerate auto provides/requires
+
+* Fri Sep 26 2014 Mat Booth <mat.booth@redhat.com> - 3.6.0-2
+- Build/install with mvn_build/mvn_install
+- Drop unneeded BR/Rs and patches
+- General spec file clean up
+
+* Thu Jun 26 2014 Jeff Johnston <jjohnstn@redhat.com> - 3.6.0-1
+- Update to Luna release 3.6 final.
+
+* Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 3.6.0-0.2.RC1
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
+
+* Tue Jun 3 2014 Alexander Kurtakov <akurtako@redhat.com> 3.6.0-0.1.RC1
+- Update to 3.6.0 RC.
+
+* Tue Jun 3 2014 Alexander Kurtakov <akurtako@redhat.com> 3.5.1-0.3.RC4
+- Use feclipse-maven-plugin to have features unzipped.
+- Simplify spec a bit.
+
+* Fri Mar 28 2014 Michael Simacek <msimacek@redhat.com> - 3.5.1-0.2.RC4
+- Use Requires: java-headless rebuild (#1067528)
+
+* Tue Oct 1 2013 Krzysztof Daniel <kdaniel@redhat.com> 3.5.1-0.1.RC4
+- Update to Kepler SR1 RC4.
+
+* Tue Oct 1 2013 Krzysztof Daniel <kdaniel@redhat.com> 3.5.1-1
+- Update to latest upstream.
+
 * Mon Aug 5 2013 Krzysztof Daniel <kdaniel@redhat.com> 3.5-3
 - Fix FTBFS.
 
@@ -265,3 +247,4 @@ popd
 
 * Thu Jul 23 2009 Jeff Johnston <jjohnstn@redhat.com> 3.0.3-1
 - Initial release.
+

@@ -32,20 +32,6 @@ diff -up ./rse/features/org.eclipse.rse.telnet.source/feature.xml.fix2 ./rse/fea
           id="org.eclipse.rse.connectorservice.telnet.source"
           download-size="0"
           install-size="0"
---- releng/org.eclipse.tm.releng.master-feature/feature.xml.orig	2013-06-07 14:15:23.481634980 +0300
-+++ releng/org.eclipse.tm.releng.master-feature/feature.xml	2013-06-07 14:17:37.701625357 +0300
-@@ -72,11 +72,4 @@
-          version="0.0.0"
-          unpack="false"/>
- 
--   <plugin
--         id="org.apache.commons.net.source"
--         download-size="0"
--         install-size="0"
--         version="0.0.0"
--         unpack="false"/>
--
- </feature>
 --- rse/features/org.eclipse.rse.ftp.source/feature.xml.orig	2013-05-31 20:34:41.000000000 +0300
 +++ rse/features/org.eclipse.rse.ftp.source/feature.xml	2013-06-07 14:22:01.241613462 +0300
 @@ -34,13 +34,6 @@

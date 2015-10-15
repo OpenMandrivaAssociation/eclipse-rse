@@ -1,20 +1,7 @@
---- pom.xml.orig	2013-05-31 20:34:41.000000000 +0300
-+++ pom.xml	2013-06-07 16:07:38.815902331 +0300
-@@ -14,11 +14,11 @@
-   <prerequisites>
-     <maven>3.0</maven>
-   </prerequisites>
--  <parent>
-+  <!-- <parent>
-     <groupId>org.eclipse</groupId>
-     <artifactId>eclipse-parent</artifactId>
-     <version>3</version>
--  </parent>
-+  </parent> -->
-   <groupId>org.eclipse.tm</groupId>
-   <artifactId>tm-parent</artifactId>
-   <version>3.8.0-SNAPSHOT</version>
-@@ -228,17 +228,24 @@
+diff -up ./pom.xml.orig ./pom.xml
+--- ./pom.xml.orig	2014-05-18 21:19:02.000000000 -0400
++++ ./pom.xml	2014-05-21 12:44:05.257647123 -0400
+@@ -160,17 +160,24 @@
      <!--   <module>rse/plugins/org.eclipse.rse.useractions.sdk</module> -->
      <module>releng/org.eclipse.tm.repo</module>
      <module>terminal/plugins/org.eclipse.tm.terminal</module>
@@ -40,7 +27,7 @@
      <module>terminal/features/org.eclipse.tm.terminal.core.sdk-feature</module>
      <module>terminal/features/org.eclipse.tm.terminal.sdk-feature</module>
      <module>terminal/features/org.eclipse.tm.terminal.local-feature</module>
-@@ -251,6 +258,7 @@
+@@ -179,6 +186,7 @@
      <module>wince/org.eclipse.rse.wince-feature</module>
      <module>wince/org.eclipse.rse.subsystems.wince</module>
      <module>wince/org.eclipse.tm.rapi</module>
@@ -48,51 +35,7 @@
    </modules>
    <build>
      <plugins>
-@@ -286,42 +294,7 @@
-               <environment>
-                 <os>linux</os>
-                 <ws>gtk</ws>
--                <arch>x86</arch>
--              </environment>
--              <environment>
--                <os>linux</os>
--                <ws>gtk</ws>
--                <arch>x86_64</arch>
--              </environment>
--              <environment>
--                <os>linux</os>
--                <ws>gtk</ws>
--                <arch>ppc64</arch>
--              </environment>
--              <environment>
--                <os>win32</os>
--                <ws>win32</ws>
--                <arch>x86</arch>
--              </environment>
--              <environment>
--                <os>win32</os>
--                <ws>win32</ws>
--                <arch>x86_64</arch>
--              </environment>
--              <environment>
--                <os>macosx</os>
--                <ws>cocoa</ws>
--                <arch>x86</arch>
--              </environment>
--              <environment>
--                <os>macosx</os>
--                <ws>cocoa</ws>
--                <arch>x86_64</arch>
--              </environment>
--              <environment>
--                <os>aix</os>
--                <ws>gtk</ws>
--                <arch>ppc</arch>
-+                <arch>noarch</arch>
-               </environment>
-             </environments>
-             <resolver>p2</resolver>
-@@ -376,25 +349,8 @@
+@@ -304,25 +277,8 @@
            <groupId>org.eclipse.tycho</groupId>
            <artifactId>tycho-packaging-plugin</artifactId>
            <version>${tycho-version}</version>
