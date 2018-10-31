@@ -7,7 +7,7 @@
 Name: eclipse-rse
 Summary: Eclipse Remote System Explorer
 Version: 3.6.0
-Release: 4.1
+Release: 4.2
 License: EPL
 Group:	Development/Java
 URL: http://www.eclipse.org/dsdp/tm/
