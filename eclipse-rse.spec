@@ -10,7 +10,7 @@ Version: 3.6.0
 Release: 4.2
 License: EPL
 Group:	Development/Java
-URL: http://www.eclipse.org/dsdp/tm/
+URL: https://www.eclipse.org/dsdp/tm/
 
 Source0: http://git.eclipse.org/c/tm/org.eclipse.tm.git/snapshot/R3_6.tar.bz2
 
